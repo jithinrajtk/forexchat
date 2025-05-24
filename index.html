@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>SpiderForex</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  </head>
+  <body>
+    <div class="app-container">
+        <!-- Loading Bar -->
+        <div id="loadingBar" class="loading-bar">
+            <div class="loading-progress"></div>
+            <div class="loading-particles">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        
+        <!-- iOS Status Bar Space -->
+        <div class="ios-status-bar"></div>
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-leading">
+                <div class="app-icon">
+                    <svg class="icon-svg chart-animated" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Chart line -->
+                        <path class="chart-path" d="M6 32 L14 20 L22 26 L30 10 L36 18" stroke="var(--sf-blue)" fill="none"/>
+                        <!-- Animated dot -->
+                        <circle class="chart-dot" r="2.5" fill="#26A69A" stroke="none"/>
+                        <!-- Two animated candlesticks (hidden at first) -->
+                        <g class="candles" opacity="0">
+                            <!-- Green candle -->
+                            <rect class="candle-body candle-green" x="16" y="18" width="3" height="10" rx="1" fill="#26A69A"/>
+                            <rect class="candle-wick candle-green" x="17.4" y="14" width="0.2" height="4" fill="#111"/>
+                            <rect class="candle-wick candle-green" x="17.4" y="28" width="0.2" height="4" fill="#111"/>
+                            <!-- Red candle -->
+                            <rect class="candle-body candle-red" x="22" y="14" width="3" height="14" rx="1" fill="#EF5350"/>
+                            <rect class="candle-wick candle-red" x="23.4" y="10" width="0.2" height="4" fill="#111"/>
+                            <rect class="candle-wick candle-red" x="23.4" y="28" width="0.2" height="4" fill="#111"/>
+                        </g>
+                        <!-- Static icon: two candlesticks -->
+                        <g class="candles-static" opacity="0">
+                            <rect x="16" y="18" width="3" height="10" rx="1" fill="#26A69A"/>
+                            <rect x="17.4" y="14" width="0.2" height="4" fill="#111"/>
+                            <rect x="17.4" y="28" width="0.2" height="4" fill="#111"/>
+                            <rect x="22" y="14" width="3" height="14" rx="1" fill="#EF5350"/>
+                            <rect x="23.4" y="10" width="0.2" height="4" fill="#111"/>
+                            <rect x="23.4" y="28" width="0.2" height="4" fill="#111"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="app-title-group">
+                    <h1 class="app-title">SpiderFX</h1>
+                    <span class="app-subtitle" id="subtitle">Premium Forex Assistant</span>
+                </div>
+            </div>
+            <div class="header-trailing">
+                <button id="refreshButton" class="icon-button" aria-label="Refresh">
+                    <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 4v6h-6"/>
+                        <path d="M1 20v-6h6"/>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Price Ticker -->
+        <div class="price-ticker" id="priceTicker">
+            <div class="ticker-content">
+                <div class="ticker-row">
+                    <div class="ticker-item">
+                        <div class="ticker-pair">
+                            <span class="pair-label">EUR/USD</span>
+                            <span id="eurusd-price" class="price-value">
+                                <div class="lottie-loading"></div>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="ticker-item">
+                        <div class="ticker-pair">
+                            <span class="pair-label">GBP/USD</span>
+                            <span id="gbpusd-price" class="price-value">
+                                <div class="lottie-loading"></div>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="ticker-item">
+                        <div class="ticker-pair">
+                            <span class="pair-label">XAU/USD</span>
+                            <span id="xauusd-price" class="price-value">
+                                <div class="lottie-loading"></div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <main class="app-content">
+            <!-- Messages will be inserted here -->
+            <div id="messagesContainer" class="messages-container">
+                <!-- Initial welcome message will be inserted by JS -->
+            </div>
+            
+            <!-- Typing Indicator -->
+            <div id="typingIndicator" class="typing-indicator" aria-hidden="true">
+                <div class="lottie-typing"></div>
+            </div>
+        </main>
+        
+        <!-- Input Area -->
+        <footer class="input-area">
+            <div class="input-container">
+                <div class="message-input-wrapper">
+                    <textarea
+                        id="messageInput"
+                        class="message-input"
+                        placeholder="Message"
+                        rows="1"
+                        maxlength="500"
+                        aria-label="Type your message"
+                    ></textarea>
+                </div>
+                <button id="sendButton" class="send-button" disabled aria-label="Send message">
+                    <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Templates -->
+    <template id="template-welcome">
+        <div class="message-group assistant">
+            <div class="message-bubble assistant">
+                <div class="message-header">
+                    <div class="message-avatar">
+                        <div class="lottie-avatar"></div>
+                    </div>
+                    <span class="message-timestamp"></span>
+                </div>
+                <div class="message-content">
+                    <p class="message-greeting"></p>
+                </div>
+            </div>
+            
+            <div class="message-bubble assistant">
+                <div class="message-content">
+                    <p>Which pair would you like to trade?</p>
+                </div>
+            </div>
+            
+            <div class="currency-options">
+                <button class="currency-card" data-pair="EUR/USD">
+                    <div class="currency-card-content">
+                        <div class="currency-card-leading">
+                            <span class="currency-badge eur">EUR/USD</span>
+                            <span class="currency-name">Euro / US Dollar</span>
+                        </div>
+                        <div class="currency-rate">
+                            <div class="lottie-rate"></div>
+                        </div>
+                    </div>
+                </button>
+                
+                <button class="currency-card" data-pair="GBP/USD">
+                    <div class="currency-card-content">
+                        <div class="currency-card-leading">
+                            <span class="currency-badge gbp">GBP/USD</span>
+                            <span class="currency-name">British Pound / US Dollar</span>
+                        </div>
+                        <div class="currency-rate">
+                            <div class="lottie-rate"></div>
+                        </div>
+                    </div>
+                </button>
+                
+                <button class="currency-card" data-pair="XAU/USD">
+                    <div class="currency-card-content">
+                        <div class="currency-card-leading">
+                            <span class="currency-badge xau">XAUUSD</span>
+                            <span class="currency-name">Gold / US Dollar</span>
+                        </div>
+                        <div class="currency-rate">
+                            <div class="lottie-rate"></div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </template>
+    
+    <template id="template-user-message">
+        <div class="message-group user">
+            <div class="message-bubble user">
+                <div class="message-content">
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <template id="template-assistant-message">
+        <div class="message-group assistant">
+            <div class="message-bubble assistant">
+                <div class="message-header">
+                    <div class="message-avatar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18"/>
+                            <path d="M7 17l4-4 4 4 4-4"/>
+                        </svg>
+                    </div>
+                    <span class="message-timestamp"></span>
+                </div>
+                <div class="message-content">
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <template id="template-calculation-card">
+        <div class="trade-card">
+            <div class="trade-card-header">
+                <div class="trade-card-leading">
+                    <span class="currency-badge"></span>
+                    <span class="trade-card-title">Trade Summary</span>
+                </div>
+                <div class="trade-card-trailing">
+                    <span class="trade-time"></span>
+                </div>
+            </div>
+            
+            <div class="trade-card-content">
+                <div class="trade-details">
+                    <div class="trade-detail-group">
+                        <div class="trade-detail-row">
+                            <div class="trade-detail-label">
+                                <svg class="trade-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                                    <path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94"/>
+                                </svg>
+                                Pair
+                            </div>
+                            <div class="trade-detail-value pair-value"></div>
+                        </div>
+                        <div class="trade-detail-row">
+                            <div class="trade-detail-label">
+                                <svg class="trade-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 9l7-7 7 7M5 15l7 7 7-7"/>
+                                </svg>
+                                Entry Price
+                            </div>
+                            <div class="trade-detail-value entry-value"></div>
+                        </div>
+                        <div class="trade-detail-row">
+                            <div class="trade-detail-label">
+                                <svg class="trade-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 3v18M3 12h18M5.63 5.63L12 12m0 0l6.37 6.37M12 12l6.37-6.37M12 12l-6.37 6.37"/>
+                                </svg>
+                                Lot Size
+                            </div>
+                            <div class="trade-detail-value lot-value"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="trade-detail-separator"></div>
+                    
+                    <div class="trade-detail-group">
+                        <div class="trade-detail-row">
+                            <div class="trade-detail-label">
+                                <svg class="trade-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 16l-6 6-6-6M6 8l6-6 6 6"/>
+                                </svg>
+                                Stop Loss
+                            </div>
+                            <div class="trade-detail-value negative stop-loss-value"></div>
+                        </div>
+                        <div class="trade-detail-row">
+                            <div class="trade-detail-label">
+                                <svg class="trade-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 8l-6-6-6 6M6 16l6 6 6-6"/>
+                                </svg>
+                                Take Profit
+                            </div>
+                            <div class="trade-detail-value positive take-profit-value"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="trade-detail-separator"></div>
+                    
+                    <div class="trade-detail-group">
+                        <div class="trade-detail-row">
+                            <div class="trade-detail-label">
+                                <svg class="trade-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.91 8.84L8.56 2.23a1.93 1.93 0 00-1.81 0L3.1 4.13a2.12 2.12 0 00-.05 3.69l12.22 6.93a2 2 0 001.94 0L21 12.51a2.12 2.12 0 00-.09-3.67z"/>
+                                    <path d="M3.09 8.84v7.21a2.54 2.54 0 001.3 2.29l5.23 2.48a2.9 2.9 0 002.7 0l5.28-2.48a2.55 2.55 0 001.3-2.29V8.84"/>
+                                </svg>
+                                Potential Loss
+                            </div>
+                            <div class="trade-detail-value negative loss-value"></div>
+                        </div>
+                        <div class="trade-detail-row">
+                            <div class="trade-detail-label">
+                                <svg class="trade-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.91 15.16L8.56 21.77a1.93 1.93 0 01-1.81 0L3.1 19.87a2.12 2.12 0 01-.05-3.69l12.22-6.93a2 2 0 011.94 0L21 11.49a2.12 2.12 0 01-.09 3.67z"/>
+                                    <path d="M3.09 15.16V7.95a2.54 2.54 0 011.3-2.29l5.23-2.48a2.9 2.9 0 012.7 0l5.28 2.48a2.55 2.55 0 011.3 2.29v7.21"/>
+                                </svg>
+                                Potential Profit
+                            </div>
+                            <div class="trade-detail-value positive profit-value"></div>
+                        </div>
+                        <div class="trade-detail-row">
+                            <div class="trade-detail-label">
+                                <svg class="trade-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                                    <path d="M16.24 7.76l-4.24 4.24-4.24-4.24"/>
+                                    <path d="M16.24 16.24l-4.24-4.24-4.24 4.24"/>
+                                </svg>
+                                Risk/Reward
+                            </div>
+                            <div class="trade-detail-value risk-reward-value"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="trade-card-footer">
+                <button id="newCalculationButton" class="primary-button">
+                    <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    New Calculation
+                </button>
+                <button id="shareButton" class="secondary-button">
+                    <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                        <polyline points="16 6 12 2 8 6"/>
+                        <line x1="12" y1="2" x2="12" y2="15"/>
+                    </svg>
+                    Share Trade
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <script src="js/trading-data.js"></script>
+    <script src="js/calculations.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
